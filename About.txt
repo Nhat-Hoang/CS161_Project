@@ -1,0 +1,21 @@
+﻿			
+		
+				GUIDE
+
+		- Use   up arrow key    or  'w'  to move up
+		        down arrow key  or  's'  to move down
+		        left arrow key  or  'a'  to move left
+			right arrow key or  'd'  to move right
+		- Use 'X' and 'O' or ENTER key to choose.
+
+		- Let try to know more about this program :))))
+			
+				
+				INFORMATION
+				
+		  NAME: Nguyen Phan Nhat Hoang
+	    Student ID: 18125050
+		 Class: 19APCS1
+		  Mail: npnhoang18@apcs.vn
+
+		Product ver: 0.00.0 :)
