@@ -151,6 +151,7 @@ void Lose_Animation() {
 	Lose.x = 86;
 	Lose.y = 10;
 	int color;
+	PlaySound(TEXT("losing.wav"), NULL, SND_FILENAME | SND_ASYNC);
 	//Print
 	for (int timeloop = 0; timeloop < 24; timeloop++) {
 		if (timeloop % 2 == 0) color = 15;
@@ -166,6 +167,7 @@ void Lose_Animation() {
 		cout << Lose.line4 << endl;
 		Sleep(60);
 	}
+	PlaySound(NULL, 0, 0);
 }
 void Win_Animation(int n) {
 	Define_Animation Win;
@@ -195,6 +197,7 @@ void Win_Animation(int n) {
 
 	Win.x = 86;
 	Win.y = 6;
+	PlaySound(TEXT("winning.wav"), NULL, SND_FILENAME | SND_ASYNC);
 	Sleep(200);
 	//Print
 	for (int timeloop = 0; timeloop < 44; timeloop++) {
@@ -240,4 +243,32 @@ void Win_Animation(int n) {
 
 		Sleep(60);
 	}
+	PlaySound(NULL, 0, 0);
+}
+void EoBietCaiGiNua(int n) {
+	char line1[15];
+	char line2[25];
+	char line3[25];
+	char line4[25];
+	if (n == 1) {
+		strcpy(line1, "Press: ");
+		strcpy(line2, "      B : back to menu.");
+		strcpy(line3, "      Z : save game.");
+		strcpy(line4, "      U : undo.");
+	}
+	else {
+		strcpy(line1, "            ");
+		strcpy(line2, "                       ");
+		strcpy(line3, "                        ");
+		strcpy(line4, "                     ");
+	}
+	TextColor(7);
+	gotoXY(93, 12);
+	cout << line1 << endl;
+	gotoXY(93, 13);
+	cout << line2 << endl;
+	gotoXY(93, 14);
+	cout << line3 << endl;
+	gotoXY(93, 15);
+	cout << line4 << endl;
 }

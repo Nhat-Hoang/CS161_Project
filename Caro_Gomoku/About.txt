@@ -1,5 +1,5 @@
 ﻿                       
-					   GUIDE
+					 INSTRUCTION
 
 		- Use   up arrow key    or  'w'  to move up
 		        down arrow key  or  's'  to move down

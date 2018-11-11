@@ -150,12 +150,17 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="console.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Option.cpp" />
+    <ClCompile Include="PlayGame.cpp" />
+    <ClCompile Include="SaveLoad.cpp" />
     <ClCompile Include="Setting.cpp" />
     <ClCompile Include="StartScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="console.h" />
+    <ClInclude Include="Option.h" />
+    <ClInclude Include="PlayGame.h" />
     <ClInclude Include="Setting.h" />
     <ClInclude Include="StartScreen.h" />
   </ItemGroup>
