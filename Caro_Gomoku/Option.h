@@ -17,6 +17,6 @@ using namespace std;
 #define Color 15
 
 //Option game
-int Option_Game(int &row, int &column, char &charX, char &charO);
+int Option_Game(int &row, int &column, char &charX, char &charO, int &intX, int &intO, int &coX, int &coO);
 void Board(int &row, int &column);						// Game board
 

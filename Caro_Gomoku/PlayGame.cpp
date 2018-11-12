@@ -40,7 +40,7 @@ Control control(int z) {
 	else if (z == 90 || z == 122) return SAVE;		// Z & z 
 }
 
-int Start_Game(char a[][42], int &row, int &column, char &charX, char &charO, int &PvP, int &PvC,
+int Start_Game(char a[][42], int &row, int &column, char &charX, char &charO, int &coX, int &coO, int &PvP, int &PvC,
 	int &Easy, int &wEasy, int &Medium, int &wMedium, int &Hard, int &wHard) {
 	while (1) {
 		Clear_Screen();
@@ -50,10 +50,10 @@ int Start_Game(char a[][42], int &row, int &column, char &charX, char &charO, in
 			clrscr();
 			system("Color 7");
 			Board(row, column);
-			PP_Mode(a, row, column, 0, charX, charO, PvP);
+			PP_Mode(a, row, column, 0, charX, charO, coX, coO, PvP);
 			break;
 		case 2:
-			PC_Mode(a, row, column, charX, charO, PvC, Easy, wEasy, Medium, wMedium, Hard, wHard);
+			PC_Mode(a, row, column, charX, charO, coX, coO, PvC, Easy, wEasy, Medium, wMedium, Hard, wHard);
 			break;
 		case 3: return 0;						// Exit Start game
 		}
@@ -124,8 +124,8 @@ int Difficulty() {
 		mau[tt] = 124;
 	}
 }
-int Player_turn(char a[][42], int &row, int &column, int &x, int &y, int n, int m, int &step, int mode,
-	int &PlayerX, int &PlayerY, int &PcX, int &PcY, char &charX, char &charO, int score[][42], int Enemyscore[][42]) {
+int Player_turn(char a[][42], int &row, int &column, int &x, int &y, int n, int m, int &step, int mode, int &PlayerX, int &PlayerY,
+					int &PcX, int &PcY, char &charX, char &charO, int &coX, int &coO, int score[][42], int Enemyscore[][42]) {
 	// Function name and parameter names told everythings, so don't have anything to say about this
 	int z = _getch();
 	Control Moving = control(z);
@@ -150,7 +150,7 @@ int Player_turn(char a[][42], int &row, int &column, int &x, int &y, int n, int 
 		if (step % 2 != 0) {
 			if (a[x][y] == ' ') {
 				PlayerX = x; PlayerY = y;
-				TextColor(124);
+				TextColor(112 + coX);
 				gotoXY(x, y);
 				a[x][y] = charX;
 				cout << a[x][y] << endl;
@@ -162,7 +162,7 @@ int Player_turn(char a[][42], int &row, int &column, int &x, int &y, int n, int 
 		if (step % 2 == 0) {
 			if (a[x][y] == ' ') {
 				PlayerX = x; PlayerY = y;
-				TextColor(122);
+				TextColor(112 + coO);
 				gotoXY(x, y);
 				a[x][y] = charO;
 				cout << a[x][y] << endl;
@@ -174,7 +174,7 @@ int Player_turn(char a[][42], int &row, int &column, int &x, int &y, int n, int 
 		if (step % 2 != 0) {
 			if (a[x][y] == ' ') {
 				PlayerX = x; PlayerY = y;
-				TextColor(124);
+				TextColor(112 + coX);
 				gotoXY(x, y);
 				a[x][y] = charX;
 				cout << a[x][y] << endl;
@@ -184,7 +184,7 @@ int Player_turn(char a[][42], int &row, int &column, int &x, int &y, int n, int 
 		else {
 			if (a[x][y] == ' ') {
 				PlayerX = x; PlayerY = y;
-				TextColor(122);
+				TextColor(112 + coO);
 				gotoXY(x, y);
 				a[x][y] = charO;
 				cout << a[x][y] << endl;
@@ -193,16 +193,16 @@ int Player_turn(char a[][42], int &row, int &column, int &x, int &y, int n, int 
 		}
 		break;
 	case UNDO:
-		Undo(a, row, column, mode, step, PlayerX, PlayerY, PcX, PcY, charX, charO, score, Enemyscore);
+		Undo(a, row, column, mode, step, PlayerX, PlayerY, PcX, PcY, charX, charO, coX, coO, score, Enemyscore);
 		break;
 	case SAVE:
-		Save_Game(a, row, column);
+		Save_Game(a, row, column, charX, charO, coX, coO);
 		break;
 	case ESC:
 		return 0;
 	}
 }
-int PP_Mode(char a[][42], int &row, int &column, int load, char &charX, char &charO, int &PvP) {
+int PP_Mode(char a[][42], int &row, int &column, int load, char &charX, char &charO, int &coX, int &coO, int &PvP) {
 	int n = 4 * column, m = 2 * row;
 	int score[84][42], Enemyscore[84][42];
 	int x, y, color, PlayerX, PlayerY, PcX, PcY;
@@ -244,17 +244,21 @@ int PP_Mode(char a[][42], int &row, int &column, int load, char &charX, char &ch
 		}
 		int ahi;
 		loadgame >> ahi;
+		loadgame >> charX;
+		loadgame >> charO;
+		loadgame >> coX;
+		loadgame >> coO;
 		char c;
 		int i, j;
 		while (!loadgame.eof()) {
 			loadgame >> c >> i >> j;
 			gotoXY(i, j);
 			if (c == charX) {
-				TextColor(12);
+				TextColor(coX);
 				cout << c << endl;
 			}
 			else if (c == charO) {
-				TextColor(10);
+				TextColor(coO);
 				cout << c << endl;
 			}
 			a[i][j] = c;
@@ -281,12 +285,12 @@ int PP_Mode(char a[][42], int &row, int &column, int load, char &charX, char &ch
 			EoBietCaiGiNua(0);
 			// Delete the mouse
 			if (a[x][y] == charX) {
-				TextColor(12);
+				TextColor(coX);
 				gotoXY(x, y);
 				cout << a[x][y] << endl;
 			}
 			else if (a[x][y] == charO) {
-				TextColor(10);
+				TextColor(coO);
 				gotoXY(x, y);
 				cout << a[x][y] << endl;
 			}
@@ -307,21 +311,21 @@ int PP_Mode(char a[][42], int &row, int &column, int load, char &charX, char &ch
 		}
 		EoBietCaiGiNua(1);
 		// Playing Turn
-		int esc = Player_turn(a, row, column, x, y, n, m, step, 0, PlayerX, PlayerY, PcX, PcY, charX, charO, score, Enemyscore);
+		int esc = Player_turn(a, row, column, x, y, n, m, step, 0, PlayerX, PlayerY, PcX, PcY, charX, charO, coX, coO, score, Enemyscore);
 		if (esc == 0) return 0;
 
 		// change color previous step
 		if (CurX != x || CurY != y) {
-			if (a[CurX][CurY] == charX) color = 12;
-			else if (a[CurX][CurY] == charO) color = 10;
+			if (a[CurX][CurY] == charX) color = coX;
+			else if (a[CurX][CurY] == charO) color = coO;
 			else color = 0;
 			TextColor(color);
 			gotoXY(CurX, CurY);
 			cout << a[CurX][CurY] << endl;
 		}
 		//change color present step
-		if (a[x][y] == charX) color = 124;
-		else if (a[x][y] == charO) color = 122;
+		if (a[x][y] == charX) color = 112 + coX;
+		else if (a[x][y] == charO) color = 112 + coO;
 		else color = 119;
 		TextColor(color);
 		gotoXY(x, y);
@@ -329,8 +333,8 @@ int PP_Mode(char a[][42], int &row, int &column, int load, char &charX, char &ch
 
 	}
 }
-int PC_Mode(char a[][42], int &row, int &column, char &charX, char &charO, int &PvC,
-	int &Easy, int &wEasy, int &Medium, int &wMedium, int &Hard, int &wHard) {
+int PC_Mode(char a[][42], int &row, int &column, char &charX, char &charO, int &coX, int &coO, int &PvC,
+				int &Easy, int &wEasy, int &Medium, int &wMedium, int &Hard, int &wHard) {
 	while (1) {
 		int score[84][42];						// Score array for computer to evaluate 
 		int Enemyscore[84][42];					// Score of player for computer to evaluate
@@ -341,19 +345,19 @@ int PC_Mode(char a[][42], int &row, int &column, char &charX, char &charO, int &
 			system("Color 7");
 			clrscr();
 			Board(row, column);
-			Easy_mode(a, row, column, score, Enemyscore, charX, charO, PvC, Easy, wEasy);
+			Easy_mode(a, row, column, score, Enemyscore, charX, charO, coX, coO, PvC, Easy, wEasy);
 			break;
 		case 2:
 			system("Color 7");
 			clrscr();
 			Board(row, column);
-			Medium_mode(a, row, column, score, Enemyscore, charX, charO, PvC, Medium, wMedium);
+			Medium_mode(a, row, column, score, Enemyscore, charX, charO, coX, coO, PvC, Medium, wMedium);
 			break;
 		case 3:
 			system("Color 7");
 			clrscr();
 			Board(row, column);
-			Hard_mode(a, row, column, score, Enemyscore, charX, charO, PvC, Hard, wHard);
+			Hard_mode(a, row, column, score, Enemyscore, charX, charO, coX, coO, PvC, Hard, wHard);
 			break;
 		case 4:
 			system("Color 7");
@@ -361,7 +365,8 @@ int PC_Mode(char a[][42], int &row, int &column, char &charX, char &charO, int &
 		}
 	}
 }
-int Easy_mode(char a[][42], int &row, int &column, int score[][42], int Enemyscore[][42], char &charX, char &charO, int &PvC, int &Easy, int &wEasy) {
+int Easy_mode(char a[][42], int &row, int &column, int score[][42], int Enemyscore[][42], 
+				char &charX, char &charO, int &coX, int &coO, int &PvC, int &Easy, int &wEasy) {
 	int m = 2 * row, n = 4 * column;
 	int x, y, color, PlayerX, PlayerY, PcX, PcY;
 	int isWin, CurX, CurY;
@@ -381,20 +386,19 @@ int Easy_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 	while (1) {
 		CurX = x; CurY = y;
 		int locaX = 0, locaY = 0;			// Defined as a position that PC choose to play
-
-											// Check win
+		// Check win
 		int isWin = Check_Win(a, x, y, row, column, charX, charO);
 		if (isWin == 1) {
 			PvC++; Easy++;
 			EoBietCaiGiNua(0);
 			// Delete the mouse
 			if (a[x][y] == charX) {
-				TextColor(12);
+				TextColor(coX);
 				gotoXY(x, y);
 				cout << a[x][y] << endl;
 			}
 			else if (a[x][y] == charO) {
-				TextColor(10);
+				TextColor(coO);
 				gotoXY(x, y);
 				cout << a[x][y] << endl;
 			}
@@ -419,7 +423,7 @@ int Easy_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 		EoBietCaiGiNua(1);
 		//	Player turn
 		if (step % 2 != 0) {
-			int esc = Player_turn(a, row, column, x, y, n, m, step, 1, PlayerX, PlayerY, PcX, PcY, charX, charO, score, Enemyscore);
+			int esc = Player_turn(a, row, column, x, y, n, m, step, 1, PlayerX, PlayerY, PcX, PcY, charX, charO, coX, coO, score, Enemyscore);
 			if (esc == 0) return 0;
 		}
 		//	Computer turn
@@ -448,16 +452,16 @@ int Easy_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 
 																			// change color previous step
 		if (CurX != x || CurY != y) {
-			if (a[CurX][CurY] == charX) color = 12;
-			else if (a[CurX][CurY] == charO) color = 10;
+			if (a[CurX][CurY] == charX) color = coX;
+			else if (a[CurX][CurY] == charO) color = coO;
 			else color = 0;
 			TextColor(color);
 			gotoXY(CurX, CurY);
 			cout << a[CurX][CurY] << endl;
 		}
 		//change color present step
-		if (a[x][y] == charX) color = 124;
-		else if (a[x][y] == charO) color = 122;
+		if (a[x][y] == charX) color = 112 + coX;
+		else if (a[x][y] == charO) color = 112 + coO;
 		else color = 119;
 		TextColor(color);
 		gotoXY(x, y);
@@ -465,7 +469,8 @@ int Easy_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 	}
 	return 0;
 }
-int Medium_mode(char a[][42], int &row, int &column, int score[][42], int Enemyscore[][42], char &charX, char &charO, int &PvC, int &Medium, int &wMedium) {
+int Medium_mode(char a[][42], int &row, int &column, int score[][42], int Enemyscore[][42], 
+				char &charX, char &charO, int &coX, int &coO, int &PvC, int &Medium, int &wMedium) {
 	int m = 2 * row, n = 4 * column;
 	int x, y, color, PlayerX, PlayerY, PcX, PcY;
 	int isWin, CurX, CurY;
@@ -495,12 +500,12 @@ int Medium_mode(char a[][42], int &row, int &column, int score[][42], int Enemys
 			EoBietCaiGiNua(0);
 			// Delete the mouse
 			if (a[x][y] == charX) {
-				TextColor(12);
+				TextColor(coX);
 				gotoXY(x, y);
 				cout << a[x][y] << endl;
 			}
 			else if (a[x][y] == charO) {
-				TextColor(10);
+				TextColor(coO);
 				gotoXY(x, y);
 				cout << a[x][y] << endl;
 			}
@@ -525,7 +530,7 @@ int Medium_mode(char a[][42], int &row, int &column, int score[][42], int Enemys
 		EoBietCaiGiNua(1);
 		//	Player turn
 		if (step % 2 != 0) {
-			int esc = Player_turn(a, row, column, x, y, n, m, step, 1, PlayerX, PlayerY, PcX, PcY, charX, charO, score, Enemyscore);
+			int esc = Player_turn(a, row, column, x, y, n, m, step, 1, PlayerX, PlayerY, PcX, PcY, charX, charO, coX, coO, score, Enemyscore);
 			if (esc == 0) return 0;
 		}
 		//	Computer turn
@@ -541,7 +546,7 @@ int Medium_mode(char a[][42], int &row, int &column, int score[][42], int Enemys
 			int max2Score = 0;						// Find the second cell
 			for (int i = 2; i < n; i += 4)
 				for (int j = 1; j < m;j += 2)
-					if ((max2Score <= score[i][j]) && (max1Score >= score[i][j])) {
+					if ((max2Score <= score[i][j]) && (max1Score > score[i][j])) {
 						max2Score = score[i][j];
 						locaX2 = i; locaY2 = j;
 					}
@@ -567,20 +572,20 @@ int Medium_mode(char a[][42], int &row, int &column, int score[][42], int Enemys
 			step++;
 			x = locaX; y = locaY;
 		}
-		Score_of_Cell(a, row, column, charX, charO, score, Enemyscore);			// Evaluate the score of empty cells in order to prepare for next turn
-
-																				// change color previous step
+		Score_of_Cell(a, row, column, charX, charO, score, Enemyscore);			// Evaluate the score of empty cells in order to prepare for next turn																	
+		
+		// change color previous step
 		if (CurX != x || CurY != y) {
-			if (a[CurX][CurY] == charX) color = 12;
-			else if (a[CurX][CurY] == charO) color = 10;
+			if (a[CurX][CurY] == charX) color = coX;
+			else if (a[CurX][CurY] == charO) color = coO;
 			else color = 0;
 			TextColor(color);
 			gotoXY(CurX, CurY);
 			cout << a[CurX][CurY] << endl;
 		}
 		//change color present step
-		if (a[x][y] == charX) color = 124;
-		else if (a[x][y] == charO) color = 122;
+		if (a[x][y] == charX) color = 112 + coX;
+		else if (a[x][y] == charO) color = 112 + coO;
 		else color = 119;
 		TextColor(color);
 		gotoXY(x, y);
@@ -588,7 +593,8 @@ int Medium_mode(char a[][42], int &row, int &column, int score[][42], int Enemys
 	}
 	return 0;
 }
-int Hard_mode(char a[][42], int &row, int &column, int score[][42], int Enemyscore[][42], char &charX, char &charO, int &PvC, int &Hard, int &wHard) {
+int Hard_mode(char a[][42], int &row, int &column, int score[][42], int Enemyscore[][42], 
+				char &charX, char &charO, int &coX, int &coO, int &PvC, int &Hard, int &wHard) {
 	int m = 2 * row, n = 4 * column;
 	int x, y, color, PlayerX, PlayerY, PcX, PcY;
 	int isWin, CurX, CurY;
@@ -609,8 +615,9 @@ int Hard_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 	while (1) {
 		CurX = x; CurY = y;
 		int locaX = 0, locaY = 0;				// Defined as a position that PC choose to play
-		int locaX1 = 0, locaY1 = 0;				// Choose 2 cells to check which is better
+		int locaX1 = 0, locaY1 = 0;				// Choose 3 cells to check which is better
 		int locaX2 = 0, locaY2 = 0;
+		int locaX3 = 0, locaY3 = 0;
 
 		// Check win
 		int isWin = Check_Win(a, x, y, row, column, charX, charO);
@@ -619,12 +626,12 @@ int Hard_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 			EoBietCaiGiNua(0);
 			// Delete the mouse
 			if (a[x][y] == charX) {
-				TextColor(12);
+				TextColor(coX);
 				gotoXY(x, y);
 				cout << a[x][y] << endl;
 			}
 			else if (a[x][y] == charO) {
-				TextColor(10);
+				TextColor(coO);
 				gotoXY(x, y);
 				cout << a[x][y] << endl;
 			}
@@ -649,7 +656,7 @@ int Hard_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 		EoBietCaiGiNua(1);
 		//	Player turn
 		if (step % 2 != 0) {
-			int esc = Player_turn(a, row, column, x, y, n, m, step, 1, PlayerX, PlayerY, PcX, PcY, charX, charO, score, Enemyscore);
+			int esc = Player_turn(a, row, column, x, y, n, m, step, 1, PlayerX, PlayerY, PcX, PcY, charX, charO, coX, coO, score, Enemyscore);
 			if (esc == 0) return 0;
 		}
 		//	Computer turn
@@ -665,20 +672,34 @@ int Hard_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 			int max2Score = 0;						// Find the second cell
 			for (int i = 2; i < n; i += 4)
 				for (int j = 1; j < m;j += 2)
-					if ((max2Score <= score[i][j]) && (max1Score >= score[i][j])) {
+					if ((max2Score <= score[i][j]) && (max1Score > score[i][j])) {
 						max2Score = score[i][j];
 						locaX2 = i; locaY2 = j;
+					}
+			int max3Score = 0;						// Find the second cell
+			for (int i = 2; i < n; i += 4)
+				for (int j = 1; j < m;j += 2)
+					if ((max3Score <= score[i][j]) && (max2Score > score[i][j])) {
+						max3Score = score[i][j];
+						locaX3 = i; locaY3 = j;
 					}
 			// Find the better control to play
 			// Appreciate 2 cells to play by assume the user's control in next turn then the best score at folloeing turn
 			// Then add in all of score in these turn to evaluate the score for the cells that are checked
 			int attempt1 = test_Move_High(a, locaX1, locaY1, row, column, score, Enemyscore, charX, charO);
 			int attempt2 = test_Move_High(a, locaX2, locaY2, row, column, score, Enemyscore, charX, charO);
+			int attempt3 = test_Move_High(a, locaX3, locaY3, row, column, score, Enemyscore, charX, charO);
+			int ax = 0;
 			if (attempt1 > attempt2) {
+				ax = attempt1;
 				locaX = locaX1; locaY = locaY1;
 			}
 			else {
+				ax = attempt2;
 				locaX = locaX2; locaY = locaY2;
+			}
+			if (attempt3 > ax) {
+				locaX = locaX3; locaY = locaY3;
 			}
 			if (step == 2) {
 				locaX = CurX + 4;
@@ -694,10 +715,10 @@ int Hard_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 		}
 		Score_of_Cell(a, row, column, charX, charO, score, Enemyscore);			// Evaluate the score of empty cells in order to prepare for next turn
 
-																				// change color previous step
+		// change color previous step
 		if (CurX != x || CurY != y) {
-			if (a[CurX][CurY] == charX) color = 12;
-			else if (a[CurX][CurY] == charO) color = 10;
+			if (a[CurX][CurY] == charX) color = coX;
+			else if (a[CurX][CurY] == charO) color = coO;
 			else color = 0;
 			TextColor(color);
 			gotoXY(CurX, CurY);
@@ -705,8 +726,8 @@ int Hard_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 		}
 
 		//change color present step
-		if (a[x][y] == charX) color = 124;
-		else if (a[x][y] == charO) color = 122;
+		if (a[x][y] == charX) color = 112 + coX;
+		else if (a[x][y] == charO) color = 112 + coO;
 		else color = 119;
 		TextColor(color);
 		gotoXY(x, y);
@@ -717,78 +738,97 @@ int Hard_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 int test_Move_High(char a[][42], int x, int y, int &row, int &column, int score[][42], int Enemyscore[][42], char &charX, char &charO) {
 	int mark = score[x][y];
 	a[x][y] = charO;
-	// Enemy score cell
-	Score_of_Enemy_Cell(a, row, column, charX, charO, score, Enemyscore);
-	// Enemy control
-	int maxEnemyScore = 0;
-	int locaX = 0, locaY = 0;
-	for (int i = 2; i < 4 * column; i += 4)
-		for (int j = 1; j < 2 * row;j += 2)
-			if (maxEnemyScore <= Enemyscore[i][j]) {
-				maxEnemyScore = Enemyscore[i][j];
-				locaX = i; locaY = j;
-			}
-	// Minus the enemy score because enemy want to reduce the effective of computer control
-	mark -= Enemyscore[locaX][locaY];
-	Score_of_Cell(a, row, column, charX, charO, score, Enemyscore);
-	// Find the best cell in this control
-	int maxScore = 0, max1Score = 0, max2Score = 0;
-	int locaX1 = 0, locaY1 = 0;
-	int locaX2 = 0, locaY2 = 0;
-	for (int i = 2; i < 4 * column; i += 4)
-		for (int j = 1; j < 2 * row;j += 2)
-			if (max1Score <= score[i][j]) {
-				max1Score = score[i][j];
-				locaX1 = i; locaY1 = j;
-			}
-	for (int i = 2; i < 4 * column; i += 4)
-		for (int j = 1; j < 2 * row;j += 2)
-			if ((max2Score <= score[i][j]) && (max1Score >= score[i][j])) {
-				max2Score = score[i][j];
-				locaX2 = i; locaY2 = j;
-			}
-	// Find the better control to play
-	int attempt1 = test_Move(a, locaX1, locaY1, row, column, score, Enemyscore, charX, charO);
-	int attempt2 = test_Move(a, locaX2, locaY2, row, column, score, Enemyscore, charX, charO);
-	if (attempt1 > attempt2) {
-		locaX = locaX1; locaY = locaY1;
-	}
+	if (Check_Win(a, x, y, row, column, charX, charO) == -1) mark = -10000;
 	else {
-		locaX = locaX2; locaY = locaY2;
+		// Enemy score cell
+		Score_of_Enemy_Cell(a, row, column, charX, charO, score, Enemyscore);
+		// Enemy control
+		int maxEnemyScore = 0;
+		int locaX = 0, locaY = 0;
+		for (int i = 2; i < 4 * column; i += 4)
+			for (int j = 1; j < 2 * row;j += 2)
+				if (maxEnemyScore <= Enemyscore[i][j]) {
+					maxEnemyScore = Enemyscore[i][j];
+					locaX = i; locaY = j;
+				}
+		// Minus the enemy score because enemy want to reduce the effective of computer control
+		mark -= Enemyscore[locaX][locaY];
+		Score_of_Cell(a, row, column, charX, charO, score, Enemyscore);
+		// Find the best cell in this control
+		int max3Score = 0, max1Score = 0, max2Score = 0;
+		int locaX1 = 0, locaY1 = 0;
+		int locaX2 = 0, locaY2 = 0;
+		int locaX3 = 0, locaY3 = 0;
+		for (int i = 2; i < 4 * column; i += 4)
+			for (int j = 1; j < 2 * row;j += 2)
+				if (max1Score <= score[i][j]) {
+					max1Score = score[i][j];
+					locaX1 = i; locaY1 = j;
+				}
+		for (int i = 2; i < 4 * column; i += 4)
+			for (int j = 1; j < 2 * row;j += 2)
+				if ((max2Score <= score[i][j]) && (max1Score > score[i][j])) {
+					max2Score = score[i][j];
+					locaX2 = i; locaY2 = j;
+				}
+		for (int i = 2; i < 4 * column; i += 4)
+			for (int j = 1; j < 2 * row;j += 2)
+				if ((max3Score <= score[i][j]) && (max2Score > score[i][j])) {
+					max3Score = score[i][j];
+					locaX3 = i; locaY3 = j;
+				}
+		// Find the better control to play
+		int attempt1 = test_Move(a, locaX1, locaY1, row, column, score, Enemyscore, charX, charO);
+		int attempt2 = test_Move(a, locaX2, locaY2, row, column, score, Enemyscore, charX, charO);
+		int attempt3 = test_Move(a, locaX3, locaY3, row, column, score, Enemyscore, charX, charO);
+		int ax = 0;
+		if (attempt1 > attempt2) {
+			ax = attempt1;
+			locaX = locaX1; locaY = locaY1;
+		}
+		else {
+			ax = attempt2;
+			locaX = locaX2; locaY = locaY2;
+		}
+		if (attempt3 > ax) {
+			locaX = locaX3; locaY = locaY3;
+		}
+		// Plus cell score to determine how effective this test control is
+		mark += score[locaX][locaY];
 	}
-	// Plus cell score to determine how effective this test control is
-	mark += score[locaX][locaY];
 	a[x][y] = ' ';
 	return mark;
 }
 int test_Move(char a[][42], int x, int y, int &row, int &column, int score[][42], int Enemyscore[][42], char &charX, char &charO) {
 	int mark = score[x][y];
 	a[x][y] = charO;
-
-	// Enemy score cell
-	Score_of_Enemy_Cell(a, row, column, charX, charO, score, Enemyscore);
-	// Enemy control
-	int maxEnemyScore = 0;
-	int locaX = 0, locaY = 0;
-	for (int i = 2; i < 4 * column; i += 4)
-		for (int j = 1; j < 2 * row; j += 2)
-			if (maxEnemyScore <= Enemyscore[i][j]) {
-				maxEnemyScore = Enemyscore[i][j];
-				locaX = i; locaY = j;
-			}
-	// Minus the enemy score because enemy want to reduce the effective of computer control
-	mark -= Enemyscore[locaX][locaY];
-	Score_of_Cell(a, row, column, charX, charO, score, Enemyscore);
-	// Find the best cell in this control
-	int maxScore = 0;
-	for (int i = 2; i < 4 * column; i += 4)
-		for (int j = 1; j < 2 * row;j += 2)
-			if (maxScore <= score[i][j]) {
-				maxScore = score[i][j];
-				locaX = i; locaY = j;
-			}
-	// Plus cell score to determine how effective this test control is
-	mark += score[locaX][locaY];
+	if (Check_Win(a, x, y, row, column, charX, charO) == -1) mark = -10000;
+	else {
+		// Enemy score cell
+		Score_of_Enemy_Cell(a, row, column, charX, charO, score, Enemyscore);
+		// Enemy control
+		int maxEnemyScore = 0;
+		int locaX = 0, locaY = 0;
+		for (int i = 2; i < 4 * column; i += 4)
+			for (int j = 1; j < 2 * row; j += 2)
+				if (maxEnemyScore <= Enemyscore[i][j]) {
+					maxEnemyScore = Enemyscore[i][j];
+					locaX = i; locaY = j;
+				}
+		// Minus the enemy score because enemy want to reduce the effective of computer control
+		mark -= Enemyscore[locaX][locaY];
+		Score_of_Cell(a, row, column, charX, charO, score, Enemyscore);
+		// Find the best cell in this control
+		int maxScore = 0;
+		for (int i = 2; i < 4 * column; i += 4)
+			for (int j = 1; j < 2 * row;j += 2)
+				if (maxScore <= score[i][j]) {
+					maxScore = score[i][j];
+					locaX = i; locaY = j;
+				}
+		// Plus cell score to determine how effective this test control is
+		mark += score[locaX][locaY];
+	}
 	a[x][y] = ' ';
 	return mark;
 }
@@ -1234,7 +1274,7 @@ int Check_Win(char a[][42], int x, int y, int &row, int &column, char &charX, ch
 				check++;
 				curX -= 4;
 			}
-			if ((a[curX - 4][y] != ' ') && (a[curX - 4][y] != a[x][y])) // Blocked the left side
+			if ((curX - 4 >= 0) && (a[curX - 4][y] != ' ') && (a[curX - 4][y] != a[x][y])) // Blocked the left side
 				left = curX - 4;
 
 			curX = x; curY = y;
@@ -1242,7 +1282,7 @@ int Check_Win(char a[][42], int x, int y, int &row, int &column, char &charX, ch
 				check++;
 				curX += 4;
 			}
-			if ((a[curX + 4][y] != ' ') && (a[curX + 4][y] != a[x][y]))	//	Blocked the right side
+			if ((curX + 4 <= 4 * column) && (a[curX + 4][y] != ' ') && (a[curX + 4][y] != a[x][y]))	//	Blocked the right side
 				right = curX + 4;
 
 			if (check == 5)
@@ -1260,7 +1300,7 @@ int Check_Win(char a[][42], int x, int y, int &row, int &column, char &charX, ch
 				curX -= 4;
 				curY -= 2;
 			}
-			if ((a[curX - 4][curY - 2] != ' ') && (a[curX - 4][curY - 2] != a[x][y])) {  // Blocked the left -top side 
+			if ((curX - 4 >= 0) && (a[curX - 4][curY - 2] != ' ') && (a[curX - 4][curY - 2] != a[x][y])) {  // Blocked the left -top side 
 				left = curX - 4;
 				top = curY - 2;
 			}
@@ -1271,7 +1311,7 @@ int Check_Win(char a[][42], int x, int y, int &row, int &column, char &charX, ch
 				curX += 4;
 				curY += 2;
 			}
-			if ((a[curX + 4][curY + 2] != ' ') && (a[curX + 4][curY + 2] != a[x][y])) {	//	Blocked the right-bottom side
+			if ((curX + 4 <= 4 * column) && (a[curX + 4][curY + 2] != ' ') && (a[curX + 4][curY + 2] != a[x][y])) {	//	Blocked the right-bottom side
 				right = curX + 4;
 				bottom = curY + 2;
 			}
@@ -1291,7 +1331,7 @@ int Check_Win(char a[][42], int x, int y, int &row, int &column, char &charX, ch
 				curX -= 4;
 				curY += 2;
 			}
-			if ((a[curX - 4][curY + 2] != ' ') && (a[curX - 4][curY + 2] != a[x][y])) { // Blocked the left-bottom side
+			if ((curX - 4 >= 0) && (a[curX - 4][curY + 2] != ' ') && (a[curX - 4][curY + 2] != a[x][y])) { // Blocked the left-bottom side
 				left = curX - 4;
 				bottom = curY + 2;
 			}
@@ -1302,7 +1342,7 @@ int Check_Win(char a[][42], int x, int y, int &row, int &column, char &charX, ch
 				curX += 4;
 				curY -= 2;
 			}
-			if ((a[curX + 4][curY - 2] != ' ') && (a[curX + 4][curY - 2] != a[x][y])) {	//	Blocked the right-top side
+			if ((curX + 4 <= 4 * column) && (a[curX + 4][curY - 2] != ' ') && (a[curX + 4][curY - 2] != a[x][y])) {	//	Blocked the right-top side
 				right = curX + 4;
 				top = curY - 2;
 			}
@@ -1316,7 +1356,8 @@ int Check_Win(char a[][42], int x, int y, int &row, int &column, char &charX, ch
 		if (check != 5) return 0;
 	}
 }
-void Undo(char a[][42], int &row, int &column, int n, int &step, int x, int y, int curX, int curY, char &charX, char &charO, int score[][42], int Enemyscore[][42]) {
+void Undo(char a[][42], int &row, int &column, int n, int &step, int x, int y, int curX, int curY, 
+				char &charX, char &charO, int &coX, int &coO, int score[][42], int Enemyscore[][42]) {
 	if (n == 0) {
 		step--;
 		TextColor(7);
@@ -1345,7 +1386,7 @@ void Undo(char a[][42], int &row, int &column, int n, int &step, int x, int y, i
 	}
 }
 
-int Load(char a[][42], int &Row, char &charX, char &charO) {
+int Load(char a[][42], int &Row, char charX, char charO, int coX, int coO) {
 	int number = 0, mau[9];
 	for (int i = 0; i < 9; i++) mau[i] = Color;
 	string ListofGame[9] = { "","Game 1", "Game 2","Game 3", "Game 4", "Game 5", "Game 6", "Game 7", "Back" };
@@ -1404,6 +1445,10 @@ int Load(char a[][42], int &Row, char &charX, char &charO) {
 				break;
 			}
 			loadgame >> Row;
+			loadgame >> charX;
+			loadgame >> charO;
+			loadgame >> coX;
+			loadgame >> coO;
 			clrscr();
 			gotoXY(0, 0);
 			Board(Row, Row);
@@ -1413,11 +1458,11 @@ int Load(char a[][42], int &Row, char &charX, char &charO) {
 				loadgame >> c >> i >> j;
 				gotoXY(i, j);
 				if (c == charX) {
-					TextColor(12);
+					TextColor(coX);
 					cout << c << endl;
 				}
 				else if (c == charO) {
-					TextColor(10);
+					TextColor(coO);
 					cout << c << endl;
 				}
 				a[i][j] = c;
@@ -1433,14 +1478,14 @@ int Load(char a[][42], int &Row, char &charX, char &charO) {
 	}
 	return 0;
 }
-int Load_Game(char a[][42], int &row, int &column, char &charX, char &charO, int &PvP) {
+int Load_Game(char a[][42], int &row, int &column, char &charX, char &charO, int &coX, int &coO, int &PvP) {
 	int Row = 0;
-	int x = Load(a, Row, charX, charO);
+	int x = Load(a, Row, charX, charO, coX, coO);
 	if (x == 8) return 0;
 	Board(Row, Row);
-	PP_Mode(a, row, column, 0, charX, charO, PvP);
+	PP_Mode(a, row, column, x, charX, charO, PvP, coX, coO);
 }
-int Save_Game(char a[][42], int &row, int &column) {
+int Save_Game(char a[][42], int &row, int &column, char &charX, char &charO, int &coX, int &coO) {
 	int number = 0, mau[9];
 	int temp = 0;
 	for (int i = 0; i < 9; i++) mau[i] = Color;
@@ -1485,20 +1530,24 @@ int Save_Game(char a[][42], int &row, int &column) {
 		savegame.open("Game_3.txt");
 		break;
 	case 4:
-		savegame.open("Game_3.txt");
+		savegame.open("Game_4.txt");
 		break;
 	case 5:
-		savegame.open("Game_3.txt");
+		savegame.open("Game_5.txt");
 		break;
 	case 6:
-		savegame.open("Game_3.txt");
+		savegame.open("Game_6.txt");
 		break;
 	case 7:
-		savegame.open("Game_3.txt");
+		savegame.open("Game_7.txt");
 		break;
 	case 8: return 0;
 	}
 	savegame << row << endl;
+	savegame << charX << endl;
+	savegame << charO << endl;
+	savegame << coX << endl;
+	savegame << coO << endl;
 	for (int j = 1; j < 2 * row; j += 2) {
 		for (int i = 2; i < 4 * column; i += 4)
 			if (a[i][j] != ' ')

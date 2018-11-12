@@ -37,15 +37,16 @@ Control move(int z) {
 	else if (z == 13) return ENTER;
 }
 
-int About_Game();										// About us
-int Statics_Game(int &PvP, int &PvC, int &Easy, int &wEasy, int &Medium, int &wMedium, int &Hard, int &wHard);										// Statistic
+int About_Game();						// About us
+int Statics_Game(int &PvP, int &PvC, int &Easy, int &wEasy, int &Medium, int &wMedium, int &Hard, int &wHard);		// Statistic								// Statistic
 
 int Quit_Game();						// Exit game
 
 int main() {
-	int row, column;						// row & column of board game
-	char charX, charO;						// The display of character user play
-	char a[84][42];							// Status of Playing game
+	int row, column;					// row & column of board game
+	int intX, intO, coX, coO;
+	char charX, charO;					// The display of character user play
+	char a[84][42];						// Status of Playing game
 	int PvP, PvC, Easy, wEasy, Medium, wMedium, Hard, wHard;
 
 	SetConsoleOutputCP(437);			// set to display extended ascii characters
@@ -60,8 +61,12 @@ int main() {
 	game.open("Setting.txt");
 	game >> row;
 	game >> column;
-	game >> charX;
-	game >> charO;
+	game >> intX;  
+	game >> intO;
+	charX = char(intX);
+	charO = char(intO);
+	game >> coX;
+	game >> coO;
 	game.close();
 	Execute_1();						// Splash Screen
 	clrscr();
@@ -83,7 +88,7 @@ int main() {
 			statistics >> Hard;
 			statistics >> wHard;
 			statistics.close();
-			Start_Game(a, row, column, charX, charO, PvP, PvC, Easy, wEasy, Medium, wMedium, Hard, wHard);
+			Start_Game(a, row, column, charX, charO, coX, coO, PvP, PvC, Easy, wEasy, Medium, wMedium, Hard, wHard);
 			ofstream statistic;
 			statistic.open("Statistic.txt");
 			statistic << PvP << endl;
@@ -100,11 +105,10 @@ int main() {
 		case 2:
 			clrscr();
 			system("Color 7");
-			Load_Game(a, row, column, charX, charO, PvP);
+			Load_Game(a, row, column, charX, charO, PvP, coX, coO);
 			break;
 		case 3:
-			Clear_Screen();
-			Option_Game(row, column, charX, charO);
+			Option_Game(row, column, charX, charO, intX, intO, coX, coO);
 			break;
 		case 4:
 			clrscr();
