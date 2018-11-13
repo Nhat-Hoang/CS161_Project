@@ -18,4 +18,4 @@
 		 Class: 18CTT1	(APCS)
 		  Mail: npnhoang18@apcs.vn
 
-		Product ver: 0.00.1 :)
+		Product ver: 1.00.1 :)

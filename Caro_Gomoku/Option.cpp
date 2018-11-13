@@ -29,6 +29,7 @@ Control cOption(int z) {
 	else if (z == 13) return ENTER;
 }
 
+// Option menu :)
 int Option_Choose() {
 	int n = 6, tt = 0, mau[6];
 	int lent[6] = { 1, 6, 11, 14, 11, 5 };

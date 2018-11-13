@@ -62,6 +62,7 @@ void Execute_1() {
 	Titile.y = 9;
 	Titile.tt = LEFT;
 	int lenLoad = 1;
+	PlaySound(TEXT("splashscreen.wav"), NULL, SND_FILENAME | SND_ASYNC);
 	// vong lap chay chu
 	for (int i = 0; i < 50; i++) {
 		clrscr();
@@ -138,6 +139,7 @@ void Execute_1() {
 			Sleep(200);
 		}
 	}
+	PlaySound(NULL, 0, 0);
 };
 
 void Lose_Animation() {

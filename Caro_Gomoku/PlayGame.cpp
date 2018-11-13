@@ -125,7 +125,7 @@ int Difficulty() {
 	}
 }
 int Player_turn(char a[][42], int &row, int &column, int &x, int &y, int n, int m, int &step, int mode, int &PlayerX, int &PlayerY,
-					int &PcX, int &PcY, char &charX, char &charO, int &coX, int &coO, int score[][42], int Enemyscore[][42]) {
+					int &PcX, int &PcY, char &charX, char &charO, int &coX, int &coO, int score[][42], int Enemyscore[][42], char Mode) {
 	// Function name and parameter names told everythings, so don't have anything to say about this
 	int z = _getch();
 	Control Moving = control(z);
@@ -193,10 +193,11 @@ int Player_turn(char a[][42], int &row, int &column, int &x, int &y, int n, int 
 		}
 		break;
 	case UNDO:
-		Undo(a, row, column, mode, step, PlayerX, PlayerY, PcX, PcY, charX, charO, coX, coO, score, Enemyscore);
+		if (step > 1)
+			Undo(a, row, column, mode, step, PlayerX, PlayerY, PcX, PcY, charX, charO, coX, coO, score, Enemyscore);
 		break;
 	case SAVE:
-		Save_Game(a, row, column, charX, charO, coX, coO);
+		Save_Game(a, row, column, charX, charO, coX, coO, Mode);
 		break;
 	case ESC:
 		return 0;
@@ -242,7 +243,8 @@ int PP_Mode(char a[][42], int &row, int &column, int load, char &charX, char &ch
 			system("Color 7");
 			return 0;
 		}
-		int ahi;
+		int ahi; char ahihi;
+		loadgame >> ahihi;
 		loadgame >> ahi;
 		loadgame >> charX;
 		loadgame >> charO;
@@ -311,7 +313,7 @@ int PP_Mode(char a[][42], int &row, int &column, int load, char &charX, char &ch
 		}
 		EoBietCaiGiNua(1);
 		// Playing Turn
-		int esc = Player_turn(a, row, column, x, y, n, m, step, 0, PlayerX, PlayerY, PcX, PcY, charX, charO, coX, coO, score, Enemyscore);
+		int esc = Player_turn(a, row, column, x, y, n, m, step, 0, PlayerX, PlayerY, PcX, PcY, charX, charO, coX, coO, score, Enemyscore,'P');
 		if (esc == 0) return 0;
 
 		// change color previous step
@@ -345,19 +347,19 @@ int PC_Mode(char a[][42], int &row, int &column, char &charX, char &charO, int &
 			system("Color 7");
 			clrscr();
 			Board(row, column);
-			Easy_mode(a, row, column, score, Enemyscore, charX, charO, coX, coO, PvC, Easy, wEasy);
+			Easy_mode(a, row, column, 0, score, Enemyscore, charX, charO, coX, coO, PvC, Easy, wEasy);
 			break;
 		case 2:
 			system("Color 7");
 			clrscr();
 			Board(row, column);
-			Medium_mode(a, row, column, score, Enemyscore, charX, charO, coX, coO, PvC, Medium, wMedium);
+			Medium_mode(a, row, column, 0, score, Enemyscore, charX, charO, coX, coO, PvC, Medium, wMedium);
 			break;
 		case 3:
 			system("Color 7");
 			clrscr();
 			Board(row, column);
-			Hard_mode(a, row, column, score, Enemyscore, charX, charO, coX, coO, PvC, Hard, wHard);
+			Hard_mode(a, row, column, 0, score, Enemyscore, charX, charO, coX, coO, PvC, Hard, wHard);
 			break;
 		case 4:
 			system("Color 7");
@@ -365,7 +367,7 @@ int PC_Mode(char a[][42], int &row, int &column, char &charX, char &charO, int &
 		}
 	}
 }
-int Easy_mode(char a[][42], int &row, int &column, int score[][42], int Enemyscore[][42], 
+int Easy_mode(char a[][42], int &row, int &column, int load, int score[][42], int Enemyscore[][42], 
 				char &charX, char &charO, int &coX, int &coO, int &PvC, int &Easy, int &wEasy) {
 	int m = 2 * row, n = 4 * column;
 	int x, y, color, PlayerX, PlayerY, PcX, PcY;
@@ -382,6 +384,60 @@ int Easy_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 	for (int i = 2; i < n; i += 4)
 		for (int j = 1; j < m; j += 2)
 			a[i][j] = ' ';					// initialize the value of array before playing
+
+	ifstream loadgame;
+	if (load != 0) {
+		switch (load) {
+		case 1:
+			loadgame.open("Game_1.txt");
+			break;
+		case 2:
+			loadgame.open("Game_2.txt");
+			break;
+		case 3:
+			loadgame.open("Game_3.txt");
+			break;
+		case 4:
+			loadgame.open("Game_4.txt");
+			break;
+		case 5:
+			loadgame.open("Game_5.txt");
+			break;
+		case 6:
+			loadgame.open("Game_6.txt");
+			break;
+		case 7:
+			loadgame.open("Game_7.txt");
+			break;
+		case 8:
+			system("Color 7");
+			return 0;
+		}
+		int ahi; char ahihi;
+		loadgame >> ahihi;
+		loadgame >> ahi;
+		loadgame >> charX;
+		loadgame >> charO;
+		loadgame >> coX;
+		loadgame >> coO;
+		char c;
+		int i, j;
+		while (!loadgame.eof()) {
+			loadgame >> c >> i >> j;
+			gotoXY(i, j);
+			if (c == charX) {
+				TextColor(coX);
+				cout << c << endl;
+			}
+			else if (c == charO) {
+				TextColor(coO);
+				cout << c << endl;
+			}
+			a[i][j] = c;
+		}
+	}
+	loadgame.close();
+
 	int step = 1;			// count the ordinal of steps
 	while (1) {
 		CurX = x; CurY = y;
@@ -423,7 +479,7 @@ int Easy_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 		EoBietCaiGiNua(1);
 		//	Player turn
 		if (step % 2 != 0) {
-			int esc = Player_turn(a, row, column, x, y, n, m, step, 1, PlayerX, PlayerY, PcX, PcY, charX, charO, coX, coO, score, Enemyscore);
+			int esc = Player_turn(a, row, column, x, y, n, m, step, 1, PlayerX, PlayerY, PcX, PcY, charX, charO, coX, coO, score, Enemyscore, 'E');
 			if (esc == 0) return 0;
 		}
 		//	Computer turn
@@ -469,7 +525,7 @@ int Easy_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 	}
 	return 0;
 }
-int Medium_mode(char a[][42], int &row, int &column, int score[][42], int Enemyscore[][42], 
+int Medium_mode(char a[][42], int &row, int &column,int load, int score[][42], int Enemyscore[][42], 
 				char &charX, char &charO, int &coX, int &coO, int &PvC, int &Medium, int &wMedium) {
 	int m = 2 * row, n = 4 * column;
 	int x, y, color, PlayerX, PlayerY, PcX, PcY;
@@ -486,6 +542,60 @@ int Medium_mode(char a[][42], int &row, int &column, int score[][42], int Enemys
 	for (int i = 2; i < n; i += 4)
 		for (int j = 1; j < m; j += 2)
 			a[i][j] = ' ';				// initialize the value of array before playing
+
+	ifstream loadgame;
+	if (load != 0) {
+		switch (load) {
+		case 1:
+			loadgame.open("Game_1.txt");
+			break;
+		case 2:
+			loadgame.open("Game_2.txt");
+			break;
+		case 3:
+			loadgame.open("Game_3.txt");
+			break;
+		case 4:
+			loadgame.open("Game_4.txt");
+			break;
+		case 5:
+			loadgame.open("Game_5.txt");
+			break;
+		case 6:
+			loadgame.open("Game_6.txt");
+			break;
+		case 7:
+			loadgame.open("Game_7.txt");
+			break;
+		case 8:
+			system("Color 7");
+			return 0;
+		}
+		int ahi; char ahihi;
+		loadgame >> ahihi;
+		loadgame >> ahi;
+		loadgame >> charX;
+		loadgame >> charO;
+		loadgame >> coX;
+		loadgame >> coO;
+		char c;
+		int i, j;
+		while (!loadgame.eof()) {
+			loadgame >> c >> i >> j;
+			gotoXY(i, j);
+			if (c == charX) {
+				TextColor(coX);
+				cout << c << endl;
+			}
+			else if (c == charO) {
+				TextColor(coO);
+				cout << c << endl;
+			}
+			a[i][j] = c;
+		}
+	}
+	loadgame.close();
+
 	int step = 1;				// count the ordinal of steps
 	while (1) {
 		CurX = x; CurY = y;
@@ -530,7 +640,7 @@ int Medium_mode(char a[][42], int &row, int &column, int score[][42], int Enemys
 		EoBietCaiGiNua(1);
 		//	Player turn
 		if (step % 2 != 0) {
-			int esc = Player_turn(a, row, column, x, y, n, m, step, 1, PlayerX, PlayerY, PcX, PcY, charX, charO, coX, coO, score, Enemyscore);
+			int esc = Player_turn(a, row, column, x, y, n, m, step, 1, PlayerX, PlayerY, PcX, PcY, charX, charO, coX, coO, score, Enemyscore,'M');
 			if (esc == 0) return 0;
 		}
 		//	Computer turn
@@ -593,7 +703,7 @@ int Medium_mode(char a[][42], int &row, int &column, int score[][42], int Enemys
 	}
 	return 0;
 }
-int Hard_mode(char a[][42], int &row, int &column, int score[][42], int Enemyscore[][42], 
+int Hard_mode(char a[][42], int &row, int &column, int load, int score[][42], int Enemyscore[][42], 
 				char &charX, char &charO, int &coX, int &coO, int &PvC, int &Hard, int &wHard) {
 	int m = 2 * row, n = 4 * column;
 	int x, y, color, PlayerX, PlayerY, PcX, PcY;
@@ -610,6 +720,59 @@ int Hard_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 	for (int i = 2; i < n; i += 4)
 		for (int j = 1; j < m; j += 2)
 			a[i][j] = ' ';						// Initialize the value of array before playing
+
+	ifstream loadgame;
+	if (load != 0) {
+		switch (load) {
+		case 1:
+			loadgame.open("Game_1.txt");
+			break;
+		case 2:
+			loadgame.open("Game_2.txt");
+			break;
+		case 3:
+			loadgame.open("Game_3.txt");
+			break;
+		case 4:
+			loadgame.open("Game_4.txt");
+			break;
+		case 5:
+			loadgame.open("Game_5.txt");
+			break;
+		case 6:
+			loadgame.open("Game_6.txt");
+			break;
+		case 7:
+			loadgame.open("Game_7.txt");
+			break;
+		case 8:
+			system("Color 7");
+			return 0;
+		}
+		int ahi; char ahihi;
+		loadgame >> ahihi;
+		loadgame >> ahi;
+		loadgame >> charX;
+		loadgame >> charO;
+		loadgame >> coX;
+		loadgame >> coO;
+		char c;
+		int i, j;
+		while (!loadgame.eof()) {
+			loadgame >> c >> i >> j;
+			gotoXY(i, j);
+			if (c == charX) {
+				TextColor(coX);
+				cout << c << endl;
+			}
+			else if (c == charO) {
+				TextColor(coO);
+				cout << c << endl;
+			}
+			a[i][j] = c;
+		}
+	}
+	loadgame.close();
 
 	int step = 1;				// count the ordinal of steps
 	while (1) {
@@ -656,7 +819,7 @@ int Hard_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 		EoBietCaiGiNua(1);
 		//	Player turn
 		if (step % 2 != 0) {
-			int esc = Player_turn(a, row, column, x, y, n, m, step, 1, PlayerX, PlayerY, PcX, PcY, charX, charO, coX, coO, score, Enemyscore);
+			int esc = Player_turn(a, row, column, x, y, n, m, step, 1, PlayerX, PlayerY, PcX, PcY, charX, charO, coX, coO, score, Enemyscore, 'H');
 			if (esc == 0) return 0;
 		}
 		//	Computer turn
@@ -676,7 +839,7 @@ int Hard_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 						max2Score = score[i][j];
 						locaX2 = i; locaY2 = j;
 					}
-			int max3Score = 0;						// Find the second cell
+			int max3Score = 0;						// Find the third cell
 			for (int i = 2; i < n; i += 4)
 				for (int j = 1; j < m;j += 2)
 					if ((max3Score <= score[i][j]) && (max2Score > score[i][j])) {
@@ -738,7 +901,7 @@ int Hard_mode(char a[][42], int &row, int &column, int score[][42], int Enemysco
 int test_Move_High(char a[][42], int x, int y, int &row, int &column, int score[][42], int Enemyscore[][42], char &charX, char &charO) {
 	int mark = score[x][y];
 	a[x][y] = charO;
-	if (Check_Win(a, x, y, row, column, charX, charO) == -1) mark = -10000;
+	if (Check_Win(a, x, y, row, column, charX, charO) == -1) mark = -1000;
 	else {
 		// Enemy score cell
 		Score_of_Enemy_Cell(a, row, column, charX, charO, score, Enemyscore);
@@ -802,7 +965,7 @@ int test_Move_High(char a[][42], int x, int y, int &row, int &column, int score[
 int test_Move(char a[][42], int x, int y, int &row, int &column, int score[][42], int Enemyscore[][42], char &charX, char &charO) {
 	int mark = score[x][y];
 	a[x][y] = charO;
-	if (Check_Win(a, x, y, row, column, charX, charO) == -1) mark = -10000;
+	if (Check_Win(a, x, y, row, column, charX, charO) == -1) mark = -100;
 	else {
 		// Enemy score cell
 		Score_of_Enemy_Cell(a, row, column, charX, charO, score, Enemyscore);
@@ -834,8 +997,8 @@ int test_Move(char a[][42], int x, int y, int &row, int &column, int score[][42]
 }
 void Score_of_Cell(char a[][42], int &row, int &column, char &charX, char &charO, int score[][42], int Enemyscore[][42]) {
 	// To evaluate the score of each cell for the control
-	int AttackScore[5] = { 0, 2, 18, 162, 1458 };
-	int DefenseScore[5] = { 0, 1, 9, 81, 729 };
+	int DefenseScore[5] = { 0, 2, 18, 162, 1458 };
+	int AttackScore[5] = { 0, 1, 9, 81, 729 };
 	for (int i = 2; i < column * 4; i += 4)
 		for (int j = 1; j < row * 2;j += 2) score[i][j] = 0;
 
@@ -1037,8 +1200,8 @@ void Score_of_Cell(char a[][42], int &row, int &column, char &charX, char &charO
 }
 void Score_of_Enemy_Cell(char a[][42], int &row, int &column, char &charX, char &charO, int score[][42], int Enemyscore[][42]) {
 	// To evalue the score of each cell for the control
-	int DefenseScore[5] = { 0, 2, 14, 98, 686 };
-	int AttackScore[5] = { 0, 1, 8, 64, 512 };
+	int AttackScore[5] = { 0, 2, 14, 98, 686 };
+	int DefenseScore[5] = { 0, 1, 8, 64, 512 };
 
 	for (int i = 2; i < 4 * column; i += 4)
 		for (int j = 1; j < 2 * row;j += 2) Enemyscore[i][j] = 0;
@@ -1353,7 +1516,8 @@ int Check_Win(char a[][42], int x, int y, int &row, int &column, char &charX, ch
 				else return 1;
 		}
 
-		if (check != 5) return 0;
+		if (check > 5) return -1;
+		return 0;
 	}
 }
 void Undo(char a[][42], int &row, int &column, int n, int &step, int x, int y, int curX, int curY, 
@@ -1386,7 +1550,7 @@ void Undo(char a[][42], int &row, int &column, int n, int &step, int x, int y, i
 	}
 }
 
-int Load(char a[][42], int &Row, char charX, char charO, int coX, int coO) {
+int Load(char a[][42], int &Row, char &charX, char &charO, int &coX, int &coO, char &mode) {
 	int number = 0, mau[9];
 	for (int i = 0; i < 9; i++) mau[i] = Color;
 	string ListofGame[9] = { "","Game 1", "Game 2","Game 3", "Game 4", "Game 5", "Game 6", "Game 7", "Back" };
@@ -1444,6 +1608,7 @@ int Load(char a[][42], int &Row, char charX, char charO, int coX, int coO) {
 				loadgame.open("Game_7.txt");
 				break;
 			}
+			loadgame >> mode;
 			loadgame >> Row;
 			loadgame >> charX;
 			loadgame >> charO;
@@ -1452,6 +1617,20 @@ int Load(char a[][42], int &Row, char charX, char charO, int coX, int coO) {
 			clrscr();
 			gotoXY(0, 0);
 			Board(Row, Row);
+			gotoXY(92, 6); 
+			switch (mode) {
+			case 'P':
+				cout << "PvP mode" << endl;
+				break;
+			case 'E':
+				cout << "Easy mode" << endl;
+				break;
+			case 'M':
+				cout << "Medium mode" << endl;
+				break;
+			case 'H': 
+				cout << "Hard mode" << endl;
+			}
 			char c;
 			int i, j;
 			while (!loadgame.eof()) {
@@ -1478,14 +1657,29 @@ int Load(char a[][42], int &Row, char charX, char charO, int coX, int coO) {
 	}
 	return 0;
 }
-int Load_Game(char a[][42], int &row, int &column, char &charX, char &charO, int &coX, int &coO, int &PvP) {
+int Load_Game(char a[][42], int &row, int &column, char &charX, char &charO, int &coX, int &coO, int score[][42], int Enemyscore[][42],
+				 int &PvP, int &PvC, int &Easy, int &Medium, int &Hard, int &wEasy, int &wMedium, int &wHard) {
 	int Row = 0;
-	int x = Load(a, Row, charX, charO, coX, coO);
+	char mode;
+	int x = Load(a, Row, charX, charO, coX, coO, mode);
 	if (x == 8) return 0;
 	Board(Row, Row);
-	PP_Mode(a, row, column, x, charX, charO, PvP, coX, coO);
+	switch (mode) {
+	case 'P':
+		PP_Mode(a, row, column, x, charX, charO, PvP, coX, coO);
+		break;
+	case 'E':
+		Easy_mode(a, row, column, x, score, Enemyscore, charX, charO, coX, coO, PvC, Easy, wEasy);
+		break;
+	case 'M':
+		Medium_mode(a, row, column, x, score, Enemyscore, charX, charO, coX, coO, PvC, Medium, wMedium);
+		break;
+	case 'H':
+		Easy_mode(a, row, column, x, score, Enemyscore, charX, charO, coX, coO, PvC, Hard, wHard);
+		break;
+	}
 }
-int Save_Game(char a[][42], int &row, int &column, char &charX, char &charO, int &coX, int &coO) {
+int Save_Game(char a[][42], int &row, int &column, char &charX, char &charO, int &coX, int &coO, char mode) {
 	int number = 0, mau[9];
 	int temp = 0;
 	for (int i = 0; i < 9; i++) mau[i] = Color;
@@ -1543,6 +1737,7 @@ int Save_Game(char a[][42], int &row, int &column, char &charX, char &charO, int
 		break;
 	case 8: return 0;
 	}
+	savegame << mode << endl;
 	savegame << row << endl;
 	savegame << charX << endl;
 	savegame << charO << endl;

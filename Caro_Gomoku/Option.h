@@ -10,8 +10,6 @@
 #include "StartScreen.h"
 #include "PlayGame.h"
 
-using namespace std;
-
 #define ConsoleWidth  144
 #define ConsoleHeight 62
 #define Color 15

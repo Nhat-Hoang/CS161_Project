@@ -152,7 +152,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Option.cpp" />
     <ClCompile Include="PlayGame.cpp" />
-    <ClCompile Include="SaveLoad.cpp" />
     <ClCompile Include="Setting.cpp" />
     <ClCompile Include="StartScreen.cpp" />
   </ItemGroup>

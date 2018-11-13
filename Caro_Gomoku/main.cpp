@@ -48,6 +48,7 @@ int main() {
 	char charX, charO;					// The display of character user play
 	char a[84][42];						// Status of Playing game
 	int PvP, PvC, Easy, wEasy, Medium, wMedium, Hard, wHard;
+	int score[84][42], Enemyscore[84][42];
 
 	SetConsoleOutputCP(437);			// set to display extended ascii characters
 	resizeConsole(1280, 730);			// size of console screen
@@ -63,10 +64,10 @@ int main() {
 	game >> column;
 	game >> intX;  
 	game >> intO;
-	charX = char(intX);
-	charO = char(intO);
-	game >> coX;
-	game >> coO;
+	charX = char(intX);					// Icon for player X
+	charO = char(intO);					// Icon for player O
+	game >> coX;						// color of X
+	game >> coO;						// color of O
 	game.close();
 	Execute_1();						// Splash Screen
 	clrscr();
@@ -105,7 +106,7 @@ int main() {
 		case 2:
 			clrscr();
 			system("Color 7");
-			Load_Game(a, row, column, charX, charO, PvP, coX, coO);
+			Load_Game(a, row, column, charX, charO, coX, coO, score, Enemyscore, PvP, PvC, Easy, Medium, Hard, wEasy, wMedium, wHard);
 			break;
 		case 3:
 			Option_Game(row, column, charX, charO, intX, intO, coX, coO);
@@ -146,7 +147,7 @@ int About_Game() {
 	}
 }
 int Statics_Game(int &PvP, int &PvC, int &Easy, int &wEasy, int &Medium, int &wMedium, int &Hard, int &wHard) {
-	ifstream statistic;						// Read the input from file to get total number of game that played
+	ifstream statistic;						// Read the input from file to get total number of games that played
 	statistic.open("Statistic.txt");
 	statistic >> PvP;
 	statistic >> PvC;
@@ -188,11 +189,11 @@ int Quit_Game() {
 	int tt = 0;
 	int mau[3];
 	for (int i = 0; i < 3; i++) mau[i] = Color;
-	string Quit[3] = { "", "YES","NO" };
+	string Quit[3] = { "", "YES","NO"};
 	int lent[3] = { 1, 4, 3 };
 	while (1) {
-		int y = 26;
-		for (int i = 0; i < 3; i++) {
+		int y = 25;
+		for (int i = 1; i < 3; i++) {
 			int x = ((ConsoleWidth - lent[i]) / 2) - 2;
 			gotoXY(x, y);
 			TextColor(mau[i]);
